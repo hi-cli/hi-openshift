@@ -18,6 +18,10 @@
   hosts: all
   become: no
   gather_facts: no
+  environment:
+    HI_CLI_HOME: "/usr/local/hi-cli"
+    PATH: "/usr/local/hi-cli:{{ ansible_env.PATH }}"
+    
   tasks:
   - name: set password for admin
     shell: htpasswd -b /etc/origin/master/htpasswd admin {{ admin_password }} chdir=/etc/origin/master 
