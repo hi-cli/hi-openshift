@@ -49,7 +49,7 @@
 
 - name: "fetch hi-cli from github"
   git: repo="https://github.com/hi-cli/hi-cli.git"
-        dest=/usr/local/
+        dest=/usr/local/hi-cli
         version=master
         update=yes
 
