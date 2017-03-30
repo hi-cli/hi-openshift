@@ -39,7 +39,7 @@
     when: docker_storage_device is undefined
 
   - name: Install docker
-    shell: ./install-docker.sh all new storage={{ docker_storage_device }} chdir=/root/install 
+    shell: hi docker install all new storage={{ docker_storage_device }} 
     when: force_install_docker
 
   - name: Install client

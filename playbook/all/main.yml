@@ -47,11 +47,25 @@
 - set_fact: git_branch='master'
   when: git_branch is undefined
 
-- name: "fetch installer from gitlab"
-  git: repo={{ git_repo }}
-        dest=/root/install
-        version={{ git_branch }}
-        update=yes  
+- name: "fetch hi-cli from github"
+  git: repo="https://github.com/hi-cli/hi-cli.git"
+        dest=/usr/local/
+        version=master
+        update=yes
+
+- name: "install hi-cli"
+  shell: ./bin/install dest=/usr/local/hi-cli
+
+- name: "set hi-cli environment variables"
+  environment:
+    HI_CLI_HOME: "/usr/local/hi-cli"
+    PATH: "/usr/local/hi-cli:{{ ansible_env.PATH }}"
+
+- name: "install hi module {{ item }}"
+  shell: hi package install {{ item }}
+  with_items:
+  - centos
+  - docker
 
 - name: Ensure below services are disabled
   systemd: name={{ item }} enabled=no
