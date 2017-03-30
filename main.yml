@@ -9,7 +9,7 @@
 ---
 
 - name: Prepare client
-  include: playbook/client/config.yml
+  include: playbook/client/main.yml
 
 - name: Prepare infrastracture
   include: playbook/config.yml
