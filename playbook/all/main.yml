@@ -54,7 +54,7 @@
         update=yes
 
 - name: install hi-cli
-  shell: /usr/local/hi-cli/bin/install dest=/usr/local/hi-cli
+  shell: /usr/local/hi-cli/bin/install /usr/local/hi-cli
 
 - name: install hi module {{ item }}
   shell: hi package install {{ item }}
