@@ -1,0 +1,48 @@
+
+- name: pre-installation
+  hosts: all
+  become: no
+  gather_facts: true
+  tasks:
+
+  - name: check if password is provided
+    fail: msg="ansible-playbook main.yml --extra-vars 'admin_password=you-admin-password' "
+    when: admin_password is undefined
+
+  - name: Install packages
+    include: all/main.yml
+
+  - name: Enable selinux
+    selinux: policy=targeted state=enforcing
+
+  - set_fact:
+      repoquery_cmd: "{{ 'dnf repoquery --latest-limit 1 -d 0' if ansible_pkg_mgr == 'dnf' else 'repoquery --plugins' }}"
+
+  - set_fact: openshift_ansible_version=master
+    when: openshift_ansible_version is undefined
+
+  - set_fact: docker_version=1.12.5
+    when: docker_version is undefined
+
+  - name: Get current installed Docker version
+    command: "{{ repoquery_cmd }} --installed --qf '%{version}' docker"
+    register: curr_docker_version
+    changed_when: false
+
+  - set_fact: force_install_docker=true
+    when: curr_docker_version.stdout != docker_version
+
+  - set_fact: force_install_docker=false
+    when: force_install_docker is undefined
+
+  - set_fact: docker_storage_device=/dev/sdb
+    when: docker_storage_device is undefined
+
+  - name: Install docker
+    shell: ./install-docker.sh all new storage={{ docker_storage_device }} chdir=/root/install 
+    when: force_install_docker
+
+  - name: Install client
+    include: client/main.yml
+    when: "'client' in group_names"
+

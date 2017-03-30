@@ -1,0 +1,65 @@
+{
+    "clusters": [
+        {
+            "nodes": [
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "172.16.5.81"
+                            ],
+                            "storage": [
+                                "172.16.5.81"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        "/dev/sdc",
+                        "/dev/sdd",
+                        "/dev/sde",
+                        "/dev/sdf"
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "172.16.5.82"
+                            ],
+                            "storage": [
+                                "172.16.5.82"
+                            ]
+                        },
+                        "zone": 2
+                    },
+                    "devices": [
+                        "/dev/sdc",
+                        "/dev/sdd",
+                        "/dev/sde",
+                        "/dev/sdf"
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "172.16.5.83"
+                            ],
+                            "storage": [
+                                "172.16.5.83"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        "/dev/sdc",
+                        "/dev/sdd",
+                        "/dev/sde",
+                        "/dev/sdf"
+                    ]
+                }
+            ]
+        }
+    ]
+}

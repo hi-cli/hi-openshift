@@ -1,0 +1,11 @@
+- name: iptables {{ item }}
+  command: iptables -A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m {{ item.match }} --dport {{ item.port }} -j ACCEPT
+  with_items:
+  - {port: "24007", match: "tcp"}
+  - {port: "24008", match: "tcp"}
+  - {port: "2222", match: "tcp"}
+  - {port: "49152:49251", match: "multiport"}
+
+- name: save iptables
+  command: service iptables save
+

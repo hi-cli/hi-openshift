@@ -1,0 +1,13 @@
+- hosts: masters
+  become: no
+  gather_facts: no
+  tasks:
+  - name: set subdomain
+    set_fact: openshift_master_default_subdomain={{ subdomain }}
+    when: subdomain is defined
+
+  - name: setup subdomain
+    lineinfile: dest=/etc/origin/master/master-config.yaml regexp="^  subdomain:" line="  subdomain{{':'}} {{openshift_master_default_subdomain}}"
+
+  - name: restart master
+    service: name=origin-master state=restarted

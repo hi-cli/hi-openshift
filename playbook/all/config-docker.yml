@@ -1,0 +1,18 @@
+- hosts: all
+  become: no
+  gather_facts: no
+  tasks:
+
+  - name: Set various Docker options
+    lineinfile:
+      dest: /etc/sysconfig/docker
+      regexp: '^OPTIONS=.*$'
+      line: "OPTIONS='{{ openshift_docker_options }}' "
+
+  - name: Start the Docker service
+    systemd:
+      name: docker
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    register: start_result 

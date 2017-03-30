@@ -1,0 +1,60 @@
+###############################################################################
+# install packages
+###############################################################################
+
+- name: Ensure Centos 7
+  shell: echo $(more /etc/redhat-release | grep "CentOS Linux release 7" | wc -l)
+  register: os_release
+  failed_when: os_release.stdout == 0
+
+# - set_fact: centos_repo=http://mirrors.163.com/.help/CentOS7-Base-163.repo
+#   when: centos_repo is undefined
+
+# - stat:
+#     path: ./CentOS7-Base-163.repo
+#   register: p
+
+# - name: switch repo
+#   shell: wget {{ centos_repo }} chdir=/etc/yum.repos.d
+#   when: p.stat.exists is defined and p.stat.exists == false
+
+# - name: Clean repo
+#   command: yum clean all
+  
+# - name: Update repo
+#   command: yum makecache
+
+- name: install packages
+  yum: name={{ item }} state=present
+  with_items:
+  - epel-release
+  - centos-release-gluster
+  - wget 
+  - git 
+  - net-tools 
+  - bind-utils 
+  - iptables-services 
+  - bridge-utils 
+  - bash-completion
+  - dnsmasq
+  - ncurses-term
+  - python-pip
+  - pyOpenSSL
+  - NetworkManager
+  - heketi-client
+  - heketi-templates
+
+- set_fact: git_branch='master'
+  when: git_branch is undefined
+
+- name: "fetch installer from gitlab"
+  git: repo={{ git_repo }}
+        dest=/root/install
+        version={{ git_branch }}
+        update=yes  
+
+- name: Ensure below services are disabled
+  systemd: name={{ item }} enabled=no
+  with_items:
+  - firewalld
+  - iptables
