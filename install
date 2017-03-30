@@ -32,9 +32,13 @@ source "${HI_CLI_HOME}/bin/logging"
 function run() {
   cli="ansible-playbook ${hosts_conf} ${module_dir}/main.yml"
 
+  pushd "${module_dir}" > /dev/null
+  git clone https://github.com/openshift/openshift-ansible.git
   ${cli}
 
   result=$?
+
+  popd
 
   eval $1="\${result}"
   eval $2="\${cli}"
