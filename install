@@ -30,7 +30,7 @@ source "${HI_CLI_HOME}/bin/clap"
 source "${HI_CLI_HOME}/bin/logging"
 ###############################################################################
 function run() {
-  cli="install openshift origin"
+  cli="ansible-playbook ${hosts_conf} ${module_dir}/main.yml"
 
   ${cli}
 

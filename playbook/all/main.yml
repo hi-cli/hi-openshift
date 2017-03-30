@@ -67,6 +67,12 @@
   - centos
   - docker
 
+- name: "hi install ..."
+  shell: hi {{ item }} install
+  with_items:
+  - centos
+  - docker
+
 - name: Ensure below services are disabled
   systemd: name={{ item }} enabled=no
   with_items:
