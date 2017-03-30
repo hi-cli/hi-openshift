@@ -47,16 +47,16 @@
 - set_fact: git_branch='master'
   when: git_branch is undefined
 
-- name: "fetch hi-cli from github"
+- name: fetch hi-cli from github
   git: repo="https://github.com/hi-cli/hi-cli.git"
         dest=/usr/local/hi-cli
         version=master
         update=yes
 
-- name: "install hi-cli"
-  shell: ./bin/install dest=/usr/local/hi-cli
+- name: install hi-cli
+  shell: /usr/local/hi-cli/bin/install dest=/usr/local/hi-cli
 
-- name: "install hi module {{ item }}"
+- name: install hi module {{ item }}
   shell: hi package install {{ item }}
   with_items:
   - centos
