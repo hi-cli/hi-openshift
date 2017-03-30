@@ -10,7 +10,7 @@
     when: admin_password is undefined
 
   - name: Prepare client
-    include: playbook/client/main.yml
+    include: client/main.yml
 
   - name: Install packages
     include: all/main.yml
