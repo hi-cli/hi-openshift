@@ -4,18 +4,12 @@
   become: no
   gather_facts: true
   tasks:
-  - name: test environment > HI_CLI_HOME = {{ ansible_env.HI_CLI_HOME }}, PATH = {{ ansible_env.PATH }}
-    shell: echo "${HI_CLI_HOME} $(which hi)"
-
   - name: check if password is provided
     fail: msg="ansible-playbook main.yml --extra-vars 'admin_password=you-admin-password' "
     when: admin_password is undefined
 
   - name: Install packages
     include: all/main.yml
-
-  - name: Enable selinux
-    selinux: policy=targeted state=enforcing
 
   - set_fact:
       repoquery_cmd: "{{ 'dnf repoquery --latest-limit 1 -d 0' if ansible_pkg_mgr == 'dnf' else 'repoquery --plugins' }}"

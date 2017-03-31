@@ -7,6 +7,15 @@
   register: os_release
   failed_when: os_release.stdout == 0
 
+- name: Ensure below services are disabled
+  systemd: name={{ item }} enabled=no
+  with_items:
+  - firewalld
+  - iptables
+
+- name: Enable selinux
+  selinux: policy=targeted state=enforcing
+  
 # - set_fact: centos_repo=http://mirrors.163.com/.help/CentOS7-Base-163.repo
 #   when: centos_repo is undefined
 
@@ -73,9 +82,3 @@
   with_items:
   - centos
   - docker
-
-- name: Ensure below services are disabled
-  systemd: name={{ item }} enabled=no
-  with_items:
-  - firewalld
-  - iptables
