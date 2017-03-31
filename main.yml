@@ -18,9 +18,6 @@
   hosts: all
   become: no
   gather_facts: no
-  environment:
-    HI_CLI_HOME: "/usr/local/hi-cli"
-    PATH: "/usr/local/hi-cli/bin:{{ ansible_env.PATH }}"
 
   tasks:
   - name: set password for admin

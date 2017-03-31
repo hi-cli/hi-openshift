@@ -4,6 +4,8 @@
   become: no
   gather_facts: true
   tasks:
+  - name: test environment > HI_CLI_HOME = {{ ansible_env.HI_CLI_HOME }}, PATH = {{ ansible_env.PATH }}
+    shell: echo "${HI_CLI_HOME} $(which hi)"
 
   - name: check if password is provided
     fail: msg="ansible-playbook main.yml --extra-vars 'admin_password=you-admin-password' "
@@ -39,7 +41,10 @@
     when: docker_storage_device is undefined
 
   - name: Install docker
-    shell: hi docker install all new storage={{ docker_storage_device }} 
+    shell: hi docker install all new storage={{ docker_storage_device }}
+    environment:
+      HI_CLI_HOME: "/usr/local/hi-cli"
+      PATH: "/usr/local/hi-cli/bin:{{ ansible_env.PATH }}" 
     when: force_install_docker
 
   - name: Install client

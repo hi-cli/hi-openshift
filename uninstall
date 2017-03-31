@@ -28,6 +28,7 @@
 source "${HI_CLI_HOME}/bin/colors"
 source "${HI_CLI_HOME}/bin/clap"
 source "${HI_CLI_HOME}/bin/logging"
+source "${HI_CLI_HOME}/bin/utils"
 ###############################################################################
 function run() {
   hosts_conf=
@@ -37,24 +38,28 @@ function run() {
   if [ -f ${HOME}/.openshift/hosts.conf ]; then
     hosts_conf="-i ${HOME}/.openshift/hosts.conf"
   fi
-
-  cli="ansible-playbook ${hosts_conf} ${module_dir}/main.yml ${verbose}"
-
-  pushd "${module_dir}" > /dev/null
   
-  if [ ! -d "${module_dir}/openshift-ansible" ]; then
-    git clone https://github.com/openshift/openshift-ansible.git
+  ansible ${hosts_conf} all -m ping
+  
+  cli="exit"
+  if prompt_yesorno "Openshift is about to uninstall, do you wish to do it? [yes/no]"; then
+    cli="ansible-playbook ${hosts_conf} ${module_dir}/openshift-ansible/playbooks/adhoc/uninstall.yml"
+    pushd "${module_dir}" > /dev/null
+  
+    if [ ! -d "${module_dir}/openshift-ansible" ]; then
+      git clone https://github.com/openshift/openshift-ansible.git
+    fi
+
+    ${cli}
+
+    result=$?
+
+    popd > /dev/null
+
+    result=$?
+  else
+    exit
   fi
-
-  pushd ${module_dir}/openshift-ansible > /dev/null
-    git checkout ${openshift_ansible_version}
-  popd > /dev/null
-
-  ${cli}
-
-  result=$?
-
-  popd > /dev/null
 
   eval $1="\${result}"
   eval $2="\${cli}"
