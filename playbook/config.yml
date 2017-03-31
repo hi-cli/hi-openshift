@@ -34,6 +34,7 @@
 
   - set_fact: force_install_docker=true
     when: curr_docker_version.stdout != docker_version
+    ignore_errors: command_result is defined and "'error while evaluating conditional' in command_result.stderr"
 
   - set_fact: force_install_docker=false
     when: force_install_docker is undefined
