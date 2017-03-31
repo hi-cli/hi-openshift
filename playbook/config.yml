@@ -30,6 +30,7 @@
     command: "{{ repoquery_cmd }} --installed --qf '%{version}' docker"
     register: curr_docker_version
     changed_when: false
+    ignore_errors: command_result is defined and "'No such file or directory' in command_result.stderr"
 
   - set_fact: force_install_docker=true
     when: curr_docker_version.stdout != docker_version
