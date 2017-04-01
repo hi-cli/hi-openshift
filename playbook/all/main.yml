@@ -15,23 +15,6 @@
 
 - name: Enable selinux
   selinux: policy=targeted state=enforcing
-  
-# - set_fact: centos_repo={{ centos_repo_mirror }}{{ centos_repo }}.repo
-#   when: centos_repo is undefined
-
-# - stat:
-#     path: ./{{ centos_repo }}.repo
-#   register: p
-
-# - name: switch repo
-#   shell: wget {{ centos_repo }} chdir=/etc/yum.repos.d
-#   when: p.stat.exists is defined and p.stat.exists == false
-
-# - name: Clean repo
-#   command: yum clean all
-  
-# - name: Update repo
-#   command: yum makecache
 
 - name: install packages
   yum: name={{ item }} state=present

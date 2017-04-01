@@ -1,0 +1,24 @@
+- hosts: all
+  become: no
+  gather_facts: no
+  tasks:
+  - name: Backup repo
+    shell: mv /etc/yum.repos.d/CentOS-Base.repo "/etc/yum.repos.d/CentOS-Base.repo.backup.$(date +%Y-%m-%d:%H:%M:%S)"
+    ignore_errors: command_result is defined and "'No such file or directory' in command_result.stderr"
+
+  - set_fact: centos_repo_url={{ centos_repo_mirror }}{{ centos_repo }}.repo
+    when: centos_repo_url is undefined
+
+  - stat:
+      path: /etc/yum.repos.d/CentOS-Base.repo
+    register: p
+
+  - name: switch repo
+    shell: wget -O /etc/yum.repos.d/CentOS-Base.repo {{ centos_repo_url }} chdir=/etc/yum.repos.d
+    when: p.stat.exists is defined and p.stat.exists == false
+
+  - name: Clean repo
+    command: yum clean all
+    
+  - name: Update repo
+    command: yum makecache
