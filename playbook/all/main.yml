@@ -75,10 +75,7 @@
   - docker
 
 - name: "hi install ..."
-  shell: hi {{ item }} install
+  shell: hi centos install
   environment:
     HI_CLI_HOME: "/usr/local/hi-cli"
     PATH: "/usr/local/hi-cli/bin:{{ ansible_env.PATH }}"
-  with_items:
-  - centos
-  - docker
