@@ -32,6 +32,9 @@ source "${HI_CLI_HOME}/bin/logging"
 function play() {
   playbook="$1"
   hosts_conf=
+
+  log_info "play ${playbook}"
+
   if [ -f ${PWD}/hosts.conf ]; then
     hosts_conf="-i ${PWD}/hosts.conf"
   fi
@@ -46,8 +49,6 @@ function play() {
   if [ "${install_docker}" != "" ]; then
     extra_vars="${extra_vars} force_install_docker=true"
   fi
-
-  cli="ansible-playbook ${hosts_conf} ${module_dir}/main.yml ${verbose}"
 
   pushd "${module_dir}" > /dev/null
   

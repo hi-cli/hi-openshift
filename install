@@ -28,15 +28,16 @@
 source "${HI_CLI_HOME}/bin/colors"
 source "${HI_CLI_HOME}/bin/clap"
 source "${HI_CLI_HOME}/bin/logging"
+source "${module_dir}/play"
 ###############################################################################
 
 function run() {
 
-  cli="play ${module_dir}/main.yml"
+  cli="${module_dir}/main.yml"
 
-  source "${module_dir}/play"
+  play "${module_dir}/main.yml"
 
-  ${cli}
+  result="$?"
 
   eval $1="\${result}"
   eval $2="\${cli}"
