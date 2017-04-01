@@ -29,16 +29,41 @@ source "${HI_CLI_HOME}/bin/colors"
 source "${HI_CLI_HOME}/bin/clap"
 source "${HI_CLI_HOME}/bin/logging"
 ###############################################################################
+function play() {
+  playbook="$1"
+  hosts_conf=
+  if [ -f ${PWD}/hosts.conf ]; then
+    hosts_conf="-i ${PWD}/hosts.conf"
+  fi
+  if [ -f ${HOME}/.openshift/hosts.conf ]; then
+    hosts_conf="-i ${HOME}/.openshift/hosts.conf"
+  fi
 
-function run() {
+  extra_vars=
+  if [ "${password}" != "" ]; then
+    extra_vars="--extra-vars admin_password=${password}"
+  fi
+  if [ "${install_docker}" != "" ]; then
+    extra_vars="${extra_vars} force_install_docker=true"
+  fi
 
-  cli="play ${module_dir}/main.yml"
+  cli="ansible-playbook ${hosts_conf} ${module_dir}/main.yml ${verbose}"
 
-  source "${module_dir}/play"
+  pushd "${module_dir}" > /dev/null
+  
+  if [ ! -d "${module_dir}/openshift-ansible" ]; then
+    git clone https://github.com/openshift/openshift-ansible.git
+  fi
 
-  ${cli}
+  pushd ${module_dir}/openshift-ansible > /dev/null
+    git checkout ${openshift_ansible_version}
+  popd > /dev/null
 
-  eval $1="\${result}"
-  eval $2="\${cli}"
+  ansible-playbook ${hosts_conf} ${module_dir}/main.yml ${verbose} --extra-vars "${extra_vars}"
+
+  result=$?
+
+  popd > /dev/null
 }
+
 ###############################################################################

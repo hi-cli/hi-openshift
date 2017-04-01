@@ -22,18 +22,16 @@
 # Updated: Thu Mar 30 21:24:46 CST 2017
 # Module: openshift
 # Submodule: 
-# Command: install
+# Command: post-install
 ###############################################################################
 
 source "${HI_CLI_HOME}/bin/colors"
 source "${HI_CLI_HOME}/bin/clap"
 source "${HI_CLI_HOME}/bin/logging"
 ###############################################################################
-
 function run() {
-
-  cli="play ${module_dir}/main.yml"
-
+  cli="play ${module_dir}/post.yml"
+  
   source "${module_dir}/play"
 
   ${cli}
@@ -41,4 +39,5 @@ function run() {
   eval $1="\${result}"
   eval $2="\${cli}"
 }
+
 ###############################################################################
