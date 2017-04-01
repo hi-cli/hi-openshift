@@ -32,7 +32,7 @@
   when: ansible_profile is undefined
 
 - name: set topology_config
-  command: find . -name topology-{{ ansible_profile }}.json chdir=/root/install # working directory could be variable
+  command: find . -name topology.json chdir={{ ansible_working_directory }} # working directory could be variable
   register: topology_config
 
 - name: debug topology_config
