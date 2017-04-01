@@ -47,7 +47,7 @@ function play() {
     extra_vars="--extra-vars admin_password=${password}"
   fi
   if [ "${install_docker}" != "" ]; then
-    extra_vars="${extra_vars} force_install_docker=true"
+    extra_vars="${extra_vars} force_install_docker=${install_docker}"
   fi
 
   pushd "${module_dir}" > /dev/null
