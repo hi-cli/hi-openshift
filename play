@@ -35,6 +35,15 @@ function play() {
 
   log_info "play ${playbook}"
 
+  extra_vars="--extra-vars "
+
+  topology_json_file="${PWD}/topology.json"
+  if [ ! -f "${topology_json_file}" ]; then
+    log_warn "${topology_json_file} not found!"
+    exit
+  fi
+  extra_vars="${extra_vars} topology_json_file=${topology_json_file}"
+
   if [ -f ${PWD}/hosts.conf ]; then
     hosts_conf="-i ${PWD}/hosts.conf"
   fi
@@ -42,9 +51,9 @@ function play() {
     hosts_conf="-i ${HOME}/.openshift/hosts.conf"
   fi
 
-  extra_vars=
+  
   if [ "${password}" != "" ]; then
-    extra_vars="--extra-vars admin_password=${password}"
+    extra_vars="${extra_vars} admin_password=${password}"
   fi
   if [ "${install_docker}" != "" ]; then
     extra_vars="${extra_vars} force_install_docker=${install_docker}"

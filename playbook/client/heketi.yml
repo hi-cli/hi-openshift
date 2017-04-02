@@ -31,15 +31,11 @@
 - set_fact: ansible_profile=default
   when: ansible_profile is undefined
 
-- name: set topology_config
-  command: find . -name topology.json chdir={{ ansible_working_directory }} # working directory could be variable
-  register: topology_config
-
-- name: debug topology_config
-  debug: msg="{{ topology_config }}"
+# - name: debug topology_config
+#   debug: msg="{{ topology_config }}"
 
 - name: install topology in deploy-heketi
-  command: heketi-cli -s http://deploy-heketi-default.{{ openshift_master_default_subdomain }} topology load --json={{ topology_config.stdout_lines[0] }} chdir=/root/install
+  command: heketi-cli -s http://deploy-heketi-default.{{ openshift_master_default_subdomain }} topology load --json={{ ansible_working_directory }}/{{ topology_json_file }} chdir={{ ansible_working_directory }}
   when: "'topology-{{ ansible_profile }}.json' in topology_config.stdout"
   failed_when: (command_result is defined and "'Unable to add device' in command_result.stderr")
 
