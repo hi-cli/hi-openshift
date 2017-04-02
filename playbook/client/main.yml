@@ -1,8 +1,5 @@
 ---
 
-- name: copy topology.json
-  copy: src=topology.json dest={{ ansible_working_directory }} force=yes mode=0666
-
 - name: set client_toos_dir
   shell: ls {{ ansible_working_directory }}/openshift-origin-client-tools-*/oc
   register: client_toos_dir
