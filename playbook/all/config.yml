@@ -56,7 +56,11 @@
 
   - name: install hi-cli
     shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/hi-cli/hi-cli/master/bin/install)"
+    ignore_errors: command_result is defined and "'hi-cli is already installed' in command_result.stderr"
 
+  - name: update hi-cli
+    shell: env hi update
+    
   - name: install hi modules
     shell: env hi package install {{ item }} force
     with_items:
