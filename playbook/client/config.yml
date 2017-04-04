@@ -1,0 +1,25 @@
+---
+- hosts: client
+  become: no
+  gather_facts: no
+  tasks:
+  - name: set client_toos_dir
+    shell: ls {{ ansible_working_directory }}/openshift-origin-client-tools-*/oc
+    register: client_toos_dir
+    ignore_errors: command_result is defined and "'No such file or directory' in command_result.stderr"
+
+  - name: test
+    shell: echo {{client_toos_dir}}
+
+  - name: get oc client
+    unarchive: src={{ openshift_client_tools }} dest={{ ansible_working_directory }} copy=no
+    when: download_oc_client is defined and "'openshift-origin-client-tools' not in client_toos_dir.stdout"
+
+  - name: set client_toos_dir
+    shell: ls {{ ansible_working_directory }}/openshift-origin-client-tools-*/oc
+    register: client_toos_dir
+    when: download_oc_client is defined
+
+  - name: copy oc to /usr/bin
+    command: cp {{ client_toos_dir.stdout }} /usr/bin
+    when: download_oc_client is defined

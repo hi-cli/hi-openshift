@@ -1,31 +1,41 @@
+- hosts: masters
+  become: no
+  gather_facts: no
+  tasks:
+  - name: set password for admin
+    shell: htpasswd -b /etc/origin/master/htpasswd admin {{ admin_password }} chdir=/etc/origin/master
+    when: "'masters' in group_names"
 
-- name: make user admin a cluster admin
-  command: oadm policy add-cluster-role-to-user cluster-admin admin
+  - name: Login to openshift cluster by 'system:admin'
+    command: oc login https://{{ openshift_public_hostname }}:8443 -u 'system:admin' -n default
+    
+  - name: make user admin a cluster admin
+    command: oadm policy add-cluster-role-to-user cluster-admin admin
 
-- name: setup router privileges
-  command: oadm policy add-scc-to-user privileged -z router
+  - name: setup router privileges
+    command: oadm policy add-scc-to-user privileged -z router
 
-- name: setup deployer privileges
-  command: oadm policy add-scc-to-user privileged -z default
+  - name: setup deployer privileges
+    command: oadm policy add-scc-to-user privileged -z default
 
-# - name: deploy a router
-#   command: oadm router --replicas=3 --service-account=router --credentials=/etc/origin/master/openshift-router.kubeconfig
+  # - name: deploy a router
+  #   command: oadm router --replicas=3 --service-account=router --credentials=/etc/origin/master/openshift-router.kubeconfig
 
-# - name: setup subdomain
-#   lineinfile: dest=/etc/origin/master/master-config.yaml regexp="^  subdomain:" line="  subdomain{{':'}} {{ openshift_master_default_subdomain }}"
+  # - name: setup subdomain
+  #   lineinfile: dest=/etc/origin/master/master-config.yaml regexp="^  subdomain:" line="  subdomain{{':'}} {{ openshift_master_default_subdomain }}"
 
-- name: restart master
-  service: name=origin-master state=restarted
+  - name: restart master
+    service: name=origin-master state=restarted
 
-- name: wait until master is ready
-  wait_for: host={{ groups.masters[0] }} port=8443 state=started timeout=600
+  - name: wait until master is ready
+    wait_for: host={{ groups.masters[0] }} port=8443 state=started timeout=600
 
-- name: get router hosts
-  shell:  oc get pod -o wide | grep router | awk '{print $7}'
-  register: router_hosts
+  - name: get router hosts
+    shell:  oc get pod -o wide | grep router | awk '{print $7}'
+    register: router_hosts
 
-- name: show router hosts
-  debug: msg="{{ router_hosts.stdout_lines[0] }}"
+  - name: show router hosts
+    debug: msg="{{ router_hosts.stdout_lines[0] }}"
 
-- name: wait for router in {{ router_hosts.stdout_lines[0] }}
-  wait_for: host={{ router_hosts.stdout_lines[0] }} port=80 state=started
+  - name: wait for router in {{ router_hosts.stdout_lines[0] }}
+    wait_for: host={{ router_hosts.stdout_lines[0] }} port=80 state=started

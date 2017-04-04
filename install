@@ -28,14 +28,22 @@
 source "${HI_CLI_HOME}/bin/colors"
 source "${HI_CLI_HOME}/bin/clap"
 source "${HI_CLI_HOME}/bin/logging"
+source "${HI_CLI_HOME}/bin/utils"
 source "${module_dir}/play"
 ###############################################################################
 
 function run() {
 
-  cli="${module_dir}/main.yml"
-
-  play "${module_dir}/main.yml"
+  cli="install openshift"
+  
+  if [ "${hosts}" != "" ]; then
+    if [ "${book}" == "" ]; then
+      book=config
+    fi
+    play "${module_dir}/playbook/${hosts}/${book}.yml" "config ${hosts}"
+  else
+    play "${module_dir}/main.yml" "install openshift origin"
+  fi
 
   result="$?"
 

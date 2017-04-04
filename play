@@ -31,11 +31,12 @@ source "${HI_CLI_HOME}/bin/logging"
 ###############################################################################
 function play() {
   playbook="$1"
+  description="$2"
   hosts_conf=
 
   log_info "play ${playbook}"
 
-  extra_vars="--extra-vars "
+  extra_vars="ansible_working_directory=${PWD} "
 
   topology_json_file="${PWD}/topology.json"
   if [ ! -f "${topology_json_file}" ]; then
@@ -50,13 +51,19 @@ function play() {
   if [ -f ${HOME}/.openshift/hosts.conf ]; then
     hosts_conf="-i ${HOME}/.openshift/hosts.conf"
   fi
-
+  
+  if [ "${openshift_master_default_subdomain}" != "" ]; then
+    extra_vars="${extra_vars} openshift_master_default_subdomain=${openshift_master_default_subdomain}"
+  fi
   
   if [ "${password}" != "" ]; then
     extra_vars="${extra_vars} admin_password=${password}"
   fi
   if [ "${install_docker}" != "" ]; then
     extra_vars="${extra_vars} force_install_docker=${install_docker}"
+  fi
+  if [ "${master_ip}" != "" ]; then
+    extra_vars="${extra_vars} master_ip=${master_ip}"
   fi
 
   pushd "${module_dir}" > /dev/null
@@ -66,10 +73,21 @@ function play() {
   fi
 
   pushd ${module_dir}/openshift-ansible > /dev/null
-    git checkout ${openshift_ansible_version}
+    if [ "${openshift_ansible_version}" == "" ]; then
+      openshift_ansible_version="master"
+    fi
+    git reset --hard > /dev/null
+    git checkout ${openshift_ansible_version} > /dev/null
   popd > /dev/null
 
-  ansible-playbook ${hosts_conf} ${module_dir}/main.yml ${verbose} --extra-vars "${extra_vars}"
+  ansible all ${hosts_conf} -m ping
+  read -d '' cli << _EOF_ 
+  ansible-playbook ${hosts_conf} ${playbook} ${verbose} --extra-vars "${extra_vars}"
+_EOF_
+  log_debug "${cli}"
+  if prompt_yesorno "Do you wish to play $1 to $2? [yes/no]"; then
+    ansible-playbook ${hosts_conf} ${playbook} ${verbose} --extra-vars "${extra_vars}"
+  fi
 
   result=$?
 

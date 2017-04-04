@@ -1,0 +1,7 @@
+- hosts: masters
+  become: no
+  gather_facts: no
+  tasks:
+  - name: set password for admin
+    shell: htpasswd -b /etc/origin/master/htpasswd admin {{ admin_password }} chdir=/etc/origin/master 
+    when: "'masters' in group_names"

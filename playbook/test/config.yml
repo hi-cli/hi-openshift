@@ -1,0 +1,18 @@
+---
+- hosts: masters
+  become: no
+  gather_facts: no
+  tasks:
+  - name: Add mappings to /etc/hosts
+    blockinfile:
+      dest: /etc/hosts
+      block: |
+        {{item.ip}} {{item.name}}
+      marker: "# {mark} {{item.name}}"
+    with_items: {{ openshift_hosts }}
+    - { name: devops9x-storage1, ip: 192.168.1.91 }
+    - { name: devops9x-storage2, ip: 192.168.1.92 }
+    - { name: devops9x-storage2, ip: 192.168.1.93 }
+    - { name: devops9x-node1, ip: 192.168.1.94 }
+    - { name: devops9x-master1, ip: 192.168.1.95 }
+    - { name: devops9x.vpclub.cn, ip: 192.168.1.95 }

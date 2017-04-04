@@ -9,41 +9,22 @@
 ---
 
 - name: Prepare infrastracture
-  include: playbook/config.yml
+  include: playbook/all/config.yml
 
 - name: Install Openshift Origin  
   include: openshift-ansible/playbooks/byo/config.yml
 
-- name: post installation
-  hosts: all
-  become: no
-  gather_facts: no
+- name: Install client
+  include: playbook/client/config.yml
+  when: install_client_tool is defined
 
-  tasks:
-  - name: set password for admin
-    shell: htpasswd -b /etc/origin/master/htpasswd admin {{ admin_password }} chdir=/etc/origin/master 
-    when: "'masters' in group_names"
+- name: Config masters
+  include: playbook/masters/config.yml
+  when: "'masters' in group_names"
 
-  - name: Login to openshift cluster
-    become: yes
-    become_user: root
-    command: oc login https://{{ groups.masters[0] }}:8443 --insecure-skip-tls-verify=true --username=admin --password={{ admin_password }}
-    args:
-        chdir: /root
-        creates: /root/.kube/config
-    when: "'client' in group_names"
-
-  - name: Config masters
-    include: playbook/masters/config.yml
-    when: "'masters' in group_names"
-
-  - name: Config storages
-    include: playbook/storages/config.yml
-    when: "'storages' in group_names"
-
-  - name: Deploy Gluster and Heketi
-    include: playbook/client/heketi.yml
-    when: "'client' in group_names"
+- name: Install heketi
+  include: playbook/storages/config.yml
+  when: install_heketi is defined
 
 ###############################################################################
 # Done    

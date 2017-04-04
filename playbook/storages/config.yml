@@ -1,11 +1,90 @@
-- name: iptables {{ item }}
-  command: iptables -A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m {{ item.match }} --dport {{ item.port }} -j ACCEPT
-  with_items:
-  - {port: "24007", match: "tcp"}
-  - {port: "24008", match: "tcp"}
-  - {port: "2222", match: "tcp"}
-  - {port: "49152:49251", match: "multiport"}
+---
+- hosts: storages
+  become: no
+  gather_facts: no
+  tasks:
+  - name: debug groups
+    debug: msg={{ groups }}
 
-- name: save iptables
-  command: service iptables save
+  - name: debug groups.masters[0]
+    debug: msg={{ groups.masters[0] }}
+    
+  - name: debug groups.storages
+    debug: msg={{ groups.storages }}
+
+  - name: Login to openshift cluster
+    become: yes
+    become_user: root
+    command: oc login https://{{ groups.masters[0] }}:8443 --insecure-skip-tls-verify=true --username=admin --password={{ admin_password }}
+    
+  - name: iptables {{ item }}
+    command: iptables -A OS_FIREWALL_ALLOW -p tcp -m state --state NEW -m {{ item.match }} --dport {{ item.port }} -j ACCEPT
+    with_items:
+    - {port: "24007", match: "tcp"}
+    - {port: "24008", match: "tcp"}
+    - {port: "2222", match: "tcp"}
+    - {port: "49152:49251", match: "multiport"}
+
+  - name: save iptables
+    command: service iptables save
+
+  - name: wait until master is ready
+    wait_for: host={{ groups.masters[0] }} port=8443 state=started timeout=600
+
+  - name: install templates
+    command: oc create -f /usr/share/heketi/templates
+    ignore_errors: command_result is defined and "'already exists' in command_result.stderr"
+
+  - name: grant permission for user system:serviceaccount:default:default
+    shell: oc policy add-role-to-user admin system:serviceaccount:default:default
+      
+  - name: install deploy-heketi
+    shell: oc process deploy-heketi -v HEKETI_KUBE_INSECURE=y HEKETI_KUBE_USER=admin HEKETI_KUBE_PASSWORD={{ admin_password }} HEKETI_KUBE_NAMESPACE=default HEKETI_KUBE_APIHOST=https://{{ groups.masters[0] }}:8443 | oc create -f -
+    ignore_errors: command_result is defined and "'already exists' in command_result.stderr"
+
+  - name: install glusterfs containers
+    shell: oc process glusterfs -v GLUSTERFS_NODE={{ item }} | oc create -f -
+    with_items: "{{ groups.storages }}" 
+    ignore_errors: command_result is defined and "'already exists' in command_result.stderr"
+
+  - name: wait until deploy-heketi is ready
+    wait_for: host=deploy-heketi-default.{{ openshift_master_default_subdomain }} port=80 state=started timeout=600
+
+  - name: wait until glusternode storage nodes are ready
+    wait_for: host={{ item }} port=24007 state=started timeout=600
+    with_items: "{{ groups.storages }}" 
+
+  - name: pause for 10 seconds
+    pause: seconds=10
+
+  - set_fact: ansible_profile=default
+    when: ansible_profile is undefined
+
+  - name: check topology_json_file
+    debug: msg={{ topology_json_file }}
+
+  - name: install topology in deploy-heketi
+    command: heketi-cli -s http://deploy-heketi-default.{{ openshift_master_default_subdomain }} topology load --json={{ topology_json_file }}
+    failed_when: (command_result is defined and "'Unable to add device' in command_result.stderr")
+
+  - name: setup openshift heketi storage
+    command: heketi-cli -s http://deploy-heketi-default.{{ openshift_master_default_subdomain }} setup-openshift-heketi-storage
+    ignore_errors: command_result is defined and "'already exists' in command_result.stderr"
+
+  - name: submit heketi-storage
+    command: oc create -f heketi-storage.json
+    ignore_errors: command_result is defined and "'already exists' in command_result.stderr"
+
+  - name: wait until job has copied the database
+    shell:  while true ; do if oc get pods | grep heketi-storage-copy-job | grep Completed > /dev/null 2>&1 ; then break; else sleep 1; fi; done
+
+  - name: delete deploy-heketi
+    command: oc delete all,job,template,secret --selector="deploy-heketi"
+
+  - name: deploy heketi
+    shell: oc process heketi -v HEKETI_KUBE_INSECURE=y HEKETI_KUBE_USER=admin HEKETI_KUBE_PASSWORD=admin HEKETI_KUBE_NAMESPACE=default HEKETI_KUBE_APIHOST=https://{{ groups.masters[0] }}:8443 | oc create -f -
+
+  - name: wait for heketi to be ready
+    wait_for: host=heketi-default.{{ openshift_master_default_subdomain }} port=80 state=started timeout=600
+
 
