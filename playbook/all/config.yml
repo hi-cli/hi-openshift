@@ -16,6 +16,7 @@
     with_items:
     - firewalld
     - iptables
+    ignore_errors: command_result is defined and "'Could not find the requested service' in command_result.stderr"
 
   - name: Enable selinux
     selinux: policy=targeted state=enforcing
@@ -28,7 +29,8 @@
     - wget 
     - git 
     - net-tools 
-    - bind-utils 
+    - bind-utils
+    - ethtool
     - iptables-services 
     - bridge-utils 
     - bash-completion
@@ -56,7 +58,8 @@
 
   - name: install hi-cli
     shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/hi-cli/hi-cli/master/bin/install)"
-
+    ignore_errors: command_result is defined and "'hi-cli is already installed' in command_result.stderr"
+    
   - name: install hi modules
     shell: env hi package install {{ item }} force
     with_items:

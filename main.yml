@@ -24,7 +24,7 @@
 
 - name: Install heketi
   include: playbook/storages/config.yml
-  when: install_heketi is defined
+  when: install_storage is defined
 
 ###############################################################################
 # Done    

@@ -87,4 +87,5 @@
   - name: wait for heketi to be ready
     wait_for: host=heketi-default.{{ openshift_master_default_subdomain }} port=80 state=started timeout=600
 
+# TODO: service and endpoint ?
 
