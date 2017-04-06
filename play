@@ -81,12 +81,23 @@ function play() {
   popd > /dev/null
 
   ansible all ${hosts_conf} -m ping
+
+  ansible_verbose_mode=
+  if [ "${verbose}" != "" ];
+  then
+    ansible_verbose_mode="-v"
+  fi
+  if [ "${more}" != "" ];
+  then
+    ansible_verbose_mode="-vvv"
+  fi
+
   read -d '' cli << _EOF_ 
-  ansible-playbook ${hosts_conf} ${playbook} ${verbose} --extra-vars "${extra_vars}"
+  ansible-playbook ${hosts_conf} ${playbook} ${ansible_verbose_mode} --extra-vars "${extra_vars}"
 _EOF_
   log_debug "${cli}"
   if prompt_yesorno "Do you wish to play $1 to $2? [yes/no]"; then
-    ansible-playbook ${hosts_conf} ${playbook} ${verbose} --extra-vars "${extra_vars}"
+    ansible-playbook ${hosts_conf} ${playbook} ${ansible_verbose_mode} --extra-vars "${extra_vars}"
   fi
 
   result=$?
