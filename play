@@ -65,6 +65,9 @@ function play() {
   if [ "${master_ip}" != "" ]; then
     extra_vars="${extra_vars} master_ip=${master_ip}"
   fi
+  if [ "${install_storage}" != "" ]; then
+    extra_vars="${extra_vars} install_storage=True"
+  fi
 
   pushd "${module_dir}" > /dev/null
   
