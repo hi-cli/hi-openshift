@@ -1,0 +1,29 @@
+- hosts: masters
+  become: no
+  gather_facts: yes
+  tasks:
+
+  - name: install packages
+    yum: name={{ item }} state=present
+    with_items:
+    - epel-release
+    - centos-release-gluster
+    - wget 
+    - git 
+    - net-tools 
+    - bind-utils
+    - ethtool
+    - iptables-services 
+    - bridge-utils 
+    - bash-completion
+    - dnsmasq
+    - ncurses-term
+    - python
+    - python-pip
+    - pyOpenSSL
+    - NetworkManager
+    - heketi-client
+    - heketi-templates
+    - zsh
+    - vim
+    - gcc 
