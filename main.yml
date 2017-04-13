@@ -10,6 +10,7 @@
 
 - name: Prepare infrastracture
   include: playbook/nodes/config.yml
+  when: prepare_infra is defined
 
 - name: Install Openshift Origin  
   include: openshift-ansible/playbooks/byo/config.yml
