@@ -15,8 +15,12 @@
   include: openshift-ansible/playbooks/byo/config.yml
 
 - name: Install client
-  include: playbook/client/config.yml
+  include: playbook/client/config-oc.yml
   when: install_client_tool is defined
+
+- name: Install client
+  include: playbook/client/config.yml
+  when: has_client is defined
 
 - name: Config masters
   include: playbook/masters/config.yml
