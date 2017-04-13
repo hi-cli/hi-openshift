@@ -6,4 +6,3 @@
   tasks:
   - name: Install docker
     shell: env hi docker install all new storage={{ docker_storage_device }}
-    when: install_docker is defined  
