@@ -24,11 +24,10 @@
 
 - name: Config masters
   include: playbook/masters/config.yml
-  when: "'masters' in group_names"
 
 - name: Install heketi
   include: playbook/storages/config.yml
-  when: install_storage is defined
+  when: has_heketi is defined
 
 ###############################################################################
 # Done    
