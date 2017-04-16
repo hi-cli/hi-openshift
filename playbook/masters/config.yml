@@ -24,18 +24,20 @@
   # - name: setup subdomain
   #   lineinfile: dest=/etc/origin/master/master-config.yaml regexp="^  subdomain:" line="  subdomain{{':'}} {{ openshift_master_default_subdomain }}"
 
-  - name: restart master
-    service: name=origin-master state=restarted
+  # comment below tasks temporary
+  
+  # - name: restart master
+  #   service: name=origin-master state=restarted
 
-  - name: wait until master is ready
-    wait_for: host={{ groups.masters[0] }} port=8443 state=started timeout=600
+  # - name: wait until master is ready
+  #   wait_for: host={{ groups.masters[0] }} port=8443 state=started timeout=600
 
-  - name: get router hosts
-    shell:  oc get pod -o wide | grep router | awk '{print $7}'
-    register: router_hosts
+  # - name: get router hosts
+  #   shell:  oc get pod -o wide | grep router | awk '{print $7}'
+  #   register: router_hosts
 
-  - name: show router hosts
-    debug: msg="{{ router_hosts.stdout_lines[0] }}"
+  # - name: show router hosts
+  #   debug: msg="{{ router_hosts.stdout_lines[0] }}"
 
-  - name: wait for router in {{ router_hosts.stdout_lines[0] }}
-    wait_for: host={{ router_hosts.stdout_lines[0] }} port=80 state=started
+  # - name: wait for router in {{ router_hosts.stdout_lines[0] }}
+  #   wait_for: host={{ router_hosts.stdout_lines[0] }} port=80 state=started

@@ -15,20 +15,22 @@
 - name: Install Openshift Origin  
   include: openshift-ansible/playbooks/byo/config.yml
 
-- name: Install client
-  include: playbook/client/config-oc.yml
-  when: install_client_tool is defined
-
-- name: Install client
-  include: playbook/client/config.yml
-  when: has_client is defined
-
 - name: Config masters
   include: playbook/masters/config.yml
 
-- name: Install heketi
+- name: Config openshift client
+  include: playbook/client/config-oc.yml
+  when: install_client_tool is defined
+
+- name: Config storages
   include: playbook/storages/config.yml
-  when: has_heketi is defined
+  when: install_heketi is defined
+
+- name: Install heketi
+  include: playbook/client/config.yml
+  when: install_heketi is defined
+
+
 
 ###############################################################################
 # Done    
