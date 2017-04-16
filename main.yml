@@ -20,15 +20,15 @@
 
 - name: Config openshift client
   include: playbook/client/config-oc.yml
-  when: install_client_tool is defined
+  when: use_oc_on_client is defined
 
 - name: Config storages
   include: playbook/storages/config.yml
-  when: install_heketi is defined
+  when: use_heketi is defined
 
 - name: Install heketi
   include: playbook/client/config.yml
-  when: install_heketi is defined
+  when: use_heketi is defined
 
 
 
