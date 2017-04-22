@@ -104,7 +104,6 @@ objects:
         - ${SERVICE_NAME}
         from:
           kind: ImageStreamTag
-          namespace: ${IMAGE_STREAM_NS}
           name: ${IMAGE_STREAM_TAG}
       type: ImageChange
 - apiVersion: v1
@@ -151,10 +150,6 @@ parameters:
   name: VOLUME_PVC_NAME
   required: true
   value: nexus-data
-- description: Image Stream Namespace
-  name: IMAGE_STREAM_NS, e.g. openshift
-  required: true
-  value: openshift
 - description: Image Stream Tag e.g. nexus3
   name: IMAGE_STREAM_TAG
   required: true
