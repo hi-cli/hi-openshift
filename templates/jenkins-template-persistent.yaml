@@ -34,16 +34,6 @@ objects:
       kind: Service
       name: ${JENKINS_SERVICE_NAME}
 - apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: ${PVC_NAME}
-  spec:
-    accessModes:
-    - ReadWriteMany
-    resources:
-      requests:
-        storage: ${VOLUME_CAPACITY}
-- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     creationTimestamp: null
@@ -102,7 +92,7 @@ objects:
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         securityContext:
-          runAsUser: ${USER_ID}
+          runAsUser: "${USER_ID}"
         serviceAccountName: ${JENKINS_SERVICE_NAME}
         volumes:
         - name: ${JENKINS_SERVICE_NAME}-data
@@ -188,7 +178,7 @@ parameters:
   displayName: User ID
   name: USER_ID
   required: true
-  value: "1001"  
+  value: "1001"
 - description: Maximum amount of memory the container can use.
   displayName: Memory Limit
   name: MEMORY_LIMIT
