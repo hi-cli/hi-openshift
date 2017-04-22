@@ -8,18 +8,18 @@ metadata:
     description: Sonatype Nexus 3 persistent template
     tags: ci,nexus
 objects:
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    labels:
-      app: ${SERVICE_NAME}
-    name: ${SERVICE_NAME}
-  spec:
-    tags:
-    - from:
-        kind: DockerImage
-        name: docker.io/sonatype/nexus3:${NEXUS_VERSION}
-      name: ${NEXUS_VERSION}
+# - apiVersion: v1
+#   kind: ImageStream
+#   metadata:
+#     labels:
+#       app: ${SERVICE_NAME}
+#     name: ${SERVICE_NAME}
+#   spec:
+#     tags:
+#     - from:
+#         kind: DockerImage
+#         name: docker.io/sonatype/nexus3:${NEXUS_VERSION}
+#       name: ${NEXUS_VERSION}
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -150,7 +150,7 @@ parameters:
   name: VOLUME_PVC_NAME
   required: true
   value: nexus-data
-- description: Image Stream Tag e.g. nexus3
+- description: Image Stream Tag e.g. nexus
   name: IMAGE_STREAM_TAG
   required: true
-  value: openshift/nexus3:latest
+  value: nexus:latest
