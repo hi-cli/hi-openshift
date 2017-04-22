@@ -2,20 +2,22 @@
 - hosts: client
   become: no
   gather_facts: no
+  vars:
+    target_host: "{{ groups.lb[0] }}"
   tasks:
   - name: debug groups
     debug: msg={{ groups }}
 
-  - name: debug groups.masters[0]
-    debug: msg={{ groups.masters[0] }}
+  - name: debug target_host
+    debug: msg={{ target_host }}
     
   - name: Login to openshift cluster
     become: yes
     become_user: root
-    command: oc login https://{{ groups.masters[0] }}:8443 --insecure-skip-tls-verify=true --username=admin --password={{ admin_password }}
+    command: oc login https://{{ target_host }}:8443 --insecure-skip-tls-verify=true --username=admin --password={{ admin_password }}
 
   - name: wait until master is ready
-    wait_for: host={{ groups.masters[0] }} port=8443 state=started timeout=600
+    wait_for: host={{ target_host }} port=8443 state=started timeout=600
 
   - name: install templates
     command: oc create -f /usr/share/heketi/templates
@@ -25,7 +27,7 @@
     shell: oc policy add-role-to-user admin system:serviceaccount:default:default
       
   - name: install deploy-heketi
-    shell: oc process deploy-heketi -v HEKETI_KUBE_INSECURE=y HEKETI_KUBE_USER=admin HEKETI_KUBE_PASSWORD={{ admin_password }} HEKETI_KUBE_NAMESPACE=default HEKETI_KUBE_APIHOST=https://{{ groups.masters[0] }}:8443 | oc create -f -
+    shell: oc process deploy-heketi -v HEKETI_KUBE_INSECURE=y HEKETI_KUBE_USER=admin HEKETI_KUBE_PASSWORD={{ admin_password }} HEKETI_KUBE_NAMESPACE=default HEKETI_KUBE_APIHOST=https://{{ target_host }}:8443 | oc create -f -
     ignore_errors: command_result is defined and "'already exists' in command_result.stderr"
 
   - name: install glusterfs containers
@@ -68,7 +70,7 @@
     command: oc delete all,job,template,secret --selector="deploy-heketi"
 
   - name: deploy heketi
-    shell: oc process heketi -v HEKETI_KUBE_INSECURE=y HEKETI_KUBE_USER=admin HEKETI_KUBE_PASSWORD=admin HEKETI_KUBE_NAMESPACE=default HEKETI_KUBE_APIHOST=https://{{ groups.masters[0] }}:8443 | oc create -f -
+    shell: oc process heketi -v HEKETI_KUBE_INSECURE=y HEKETI_KUBE_USER=admin HEKETI_KUBE_PASSWORD=admin HEKETI_KUBE_NAMESPACE=default HEKETI_KUBE_APIHOST=https://{{ target_host }}:8443 | oc create -f -
 
   - name: wait for heketi to be ready
     wait_for: host=heketi-default.{{ openshift_master_default_subdomain }} port=80 state=started timeout=600

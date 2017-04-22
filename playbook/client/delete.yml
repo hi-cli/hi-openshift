@@ -3,7 +3,7 @@
   become: no
   gather_facts: no
   vars:
-    master_ip: "{{ master_ip }} || {{ master_ip }}"
+    master_ip: "{{ master_ip  }} || {{ groups.masters[0] }}"
   tasks:
   - name: debug master_ip
     debug: msg={{ master_ip }}

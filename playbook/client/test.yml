@@ -1,0 +1,19 @@
+---
+- hosts: client
+  become: no
+  gather_facts: no
+  vars:
+    master_ip: "{{ groups.lb[0] }}"
+  tasks:
+  - name: debug master_ip
+    debug: msg={{ master_ip }}
+
+  - name: Login to openshift cluster
+    become: yes
+    become_user: root
+    command: oc login https://{{ master_ip }}:8443 --insecure-skip-tls-verify=true --username=admin --password={{ admin_password }}
+    
+  - name: wait until master is ready
+    wait_for: host={{ master_ip }} port=8443 state=started timeout=600
+
+

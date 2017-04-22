@@ -71,6 +71,10 @@ function play() {
 
   pushd "${module_dir}" > /dev/null
   
+  if [ ! -d "${module_dir}/gluster-kubernetes" ]; then
+    git clone https://github.com/gluster/gluster-kubernetes.git
+  fi
+
   if [ ! -d "${module_dir}/openshift-ansible" ]; then
     git clone https://github.com/openshift/openshift-ansible.git
   fi
