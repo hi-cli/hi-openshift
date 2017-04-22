@@ -153,4 +153,4 @@ parameters:
 - description: Image Stream Tag e.g. nexus3
   name: IMAGE_STREAM_TAG
   required: true
-  value: nexus3:latest
+  value: openshift/nexus3:latest
