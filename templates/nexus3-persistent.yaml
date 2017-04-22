@@ -3,15 +3,10 @@ kind: Template
 labels:
   template: nexus3-persistent-template
 metadata:
+  name: nexus3-persistent
   annotations:
     description: Sonatype Nexus 3 persistent template
     tags: ci,nexus
-  creationTimestamp: 2017-02-12T13:01:31Z
-  name: nexus3-persistent
-  namespace: openshift
-  resourceVersion: "759426"
-  selfLink: /oapi/v1/namespaces/openshift/templates/nexus3-persistent
-  uid: 5fdec98f-f123-11e6-92c6-000c295ac8ab
 objects:
 - apiVersion: v1
   kind: ImageStream
@@ -40,18 +35,16 @@ objects:
         intervalSeconds: 1
         maxSurge: 25%
         maxUnavailable: 25%
-        post:
-          execNewPod:
-            command:
-            - /bin/bash
-            - -c
-            - curl -o /tmp/nexus-functions -s https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/scripts/nexus-functions;
-              source /tmp/nexus-functions; add_nexus3_redhat_repos admin admin123
-              http://${SERVICE_NAME}:8081
-            containerName: ${SERVICE_NAME}
-          failurePolicy: Abort
         timeoutSeconds: 600
         updatePeriodSeconds: 1
+        post:
+          failurePolicy: Abort
+          execNewPod:
+            containerName: ${SERVICE_NAME}
+            command:
+              - "/bin/bash"
+              - "-c"
+              - "curl -o /tmp/nexus-functions -s https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/scripts/nexus-functions; source /tmp/nexus-functions; add_nexus3_redhat_repos admin admin123 http://${SERVICE_NAME}:8081"
       type: Rolling
     template:
       metadata:
@@ -111,7 +104,8 @@ objects:
         - ${SERVICE_NAME}
         from:
           kind: ImageStreamTag
-          name: ${SERVICE_NAME}:${NEXUS_VERSION}
+          namespace: ${IMAGE_STREAM_NAMESPAACE}
+          name: ${IMAGE_STREAM_TAG}
       type: ImageChange
 - apiVersion: v1
   kind: Service
@@ -157,3 +151,11 @@ parameters:
   name: VOLUME_PVC_NAME
   required: true
   value: nexus-data
+- description: Image Stream Namespace
+  name: IMAGE_STREAM_NAMESPAACE, e.g. openshift
+  required: true
+  value: openshift
+- description: Image Stream Tag e.g. nexus3
+  name: IMAGE_STREAM_TAG
+  required: true
+  value: nexus3:latest
