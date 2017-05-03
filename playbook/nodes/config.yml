@@ -95,5 +95,5 @@
     when: docker_storage_device is undefined
 
   - name: Install docker
-    shell: env hi docker install all new storage={{ docker_storage_device }}
-    when: install_docker is defined  
+    shell: env hi docker install all new storage={{ docker_storage_device }} ver={{ docker_version }}
+    when: install_docker is defined

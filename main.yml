@@ -26,11 +26,9 @@
   include: playbook/storages/config.yml
   when: use_heketi is defined
 
-- name: Install heketi
-  include: playbook/client/config.yml
-  when: use_heketi is defined
-
-
+# - name: Install heketi
+#   include: playbook/client/config-heketi.yml
+#   when: use_heketi is defined
 
 ###############################################################################
 # Done    

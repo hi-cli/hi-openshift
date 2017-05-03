@@ -5,4 +5,4 @@
     docker_dev: "{{ docker_storage_device | default('/dev/sdb') }}"
   tasks:
   - name: Install docker
-    shell: env hi docker install all new storage={{ docker_dev }}
+    shell: env hi docker install all new storage={{ docker_dev }} ver={{ docker_version }}
