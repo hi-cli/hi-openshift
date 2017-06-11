@@ -38,13 +38,6 @@ function play() {
 
   extra_vars="ansible_working_directory=${PWD} "
 
-  topology_json_file="${PWD}/topology.json"
-  if [ ! -f "${topology_json_file}" ]; then
-    log_warn "${topology_json_file} not found!"
-    exit
-  fi
-  extra_vars="${extra_vars} topology_json_file=${topology_json_file}"
-
   if [ -f ${PWD}/hosts.conf ]; then
     hosts_conf="-i ${PWD}/hosts.conf"
   fi
@@ -73,6 +66,14 @@ function play() {
   
   if [ ! -d "${module_dir}/gluster-kubernetes" ]; then
     git clone https://github.com/gluster/gluster-kubernetes.git
+
+    topology_json_file="${PWD}/topology.json"
+    if [ ! -f "${topology_json_file}" ]; then
+      log_warn "${topology_json_file} not found!"
+      exit
+    else
+      cp "${topology_json_file}" ${PWD}/gluster-kubernetes/deploy/  
+    fi
   fi
 
   if [ ! -d "${module_dir}/openshift-ansible" ]; then

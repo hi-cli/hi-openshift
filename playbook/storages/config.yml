@@ -4,6 +4,17 @@
   gather_facts: no
   tasks:
   
+  - name: Ensure below services are disabled
+    systemd: name={{ item }} enabled=no
+    with_items:
+    - firewalld
+    ignore_errors: command_result is defined and "'Could not find the requested service' in command_result.stderr"
+  
+  - name: Ensure below services are enabled
+    systemd: name={{ item }} enabled=yes
+    with_items:
+    - iptables
+ 
   - name: debug groups.storages
     debug: msg={{ groups.storages }}
 
