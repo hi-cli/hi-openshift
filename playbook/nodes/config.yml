@@ -51,27 +51,23 @@
     - gcc 
 
   - name: Install life enhancers on master
-    yum:
-      name: ""
-      state: present
+    yum: name={{ item }} state=present
     with_items:
-      - bash-completion
-      - deltarpm
-      - etcd
-      - tmux
-      - vim-enhanced
+    - bash-completion
+    - deltarpm
+    - etcd
+    - tmux
+    - vim-enhanced
     when: "'masters' in group_names"    
 
   - name: Remove NetworkManager
-    yum:
-      name: NetworkManager
-      state: absent
+    yum: name=NetworkManager state=absent
 
   - name: Remove swaps from fstab
-      lineinfile:
-        dest: /etc/fstab
-        regexp: '^/[\S]+\s+swap\s+swap'
-        state: absent
+    lineinfile:
+      dest: /etc/fstab
+      regexp: '^/[\S]+\s+swap\s+swap'
+      state: absent
       notify: disable swap
       when: "'nodes' in group_names"
 
