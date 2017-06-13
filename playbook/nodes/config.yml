@@ -26,6 +26,10 @@
     with_items:
     - epel-release
     - centos-release-gluster
+    - atomic-openshift-utils
+    - bind-utils
+    - bridge-utils
+    - openssh-clients
     - wget 
     - git 
     - net-tools 
@@ -38,18 +42,38 @@
     - ncurses-term
     - python
     - python-pip
+    - python-virtualenv
     - pyOpenSSL
-    - NetworkManager
     - heketi-client
     - heketi-templates
     - zsh
     - vim
     - gcc 
 
-  - name: Ensure below services are enabled
-    systemd: name={{ item }} enabled=yes state=started
+  - name: Install life enhancers on master
+    yum:
+      name: ""
+      state: present
     with_items:
-    - NetworkManager
+      - bash-completion
+      - deltarpm
+      - etcd
+      - tmux
+      - vim-enhanced
+    when: "'masters' in group_names"    
+
+  - name: Remove NetworkManager
+    yum:
+      name: NetworkManager
+      state: absent
+
+  - name: Remove swaps from fstab
+      lineinfile:
+        dest: /etc/fstab
+        regexp: '^/[\S]+\s+swap\s+swap'
+        state: absent
+      notify: disable swap
+      when: "'nodes' in group_names"
 
   - name: Ensure hostname set
     hostname: name={{ inventory_hostname }}
@@ -100,3 +124,13 @@
   - name: Install docker
     shell: env hi docker install all new storage={{ docker_storage_device }} ver={{ docker_version }}
     when: install_docker is defined
+
+  handlers:
+  - name: disable swap
+    command: swapoff --all
+    ignore_errors: yes
+
+  - name: restart journald
+    service:
+      name: systemd-journald
+      state: restarted
