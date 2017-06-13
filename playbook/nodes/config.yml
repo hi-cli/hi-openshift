@@ -64,12 +64,8 @@
     yum: name=NetworkManager state=absent
 
   - name: Remove swaps from fstab
-    lineinfile:
-      dest: /etc/fstab
-      regexp: '^/[\S]+\s+swap\s+swap'
-      state: absent
-      notify: disable swap
-      when: "'nodes' in group_names"
+    lineinfile: dest=/etc/fstab regexp='^/[\S]+\s+swap\s+swap' state=absent notify='disable swap'
+    when: "'nodes' in group_names"
 
   - name: Ensure hostname set
     hostname: name={{ inventory_hostname }}
@@ -127,6 +123,4 @@
     ignore_errors: yes
 
   - name: restart journald
-    service:
-      name: systemd-journald
-      state: restarted
+    service: name=systemd-journald state=restarted
