@@ -49,6 +49,7 @@
     - zsh
     - vim
     - gcc 
+    - yum-utils
 
   - name: Install life enhancers on master
     yum: name={{ item }} state=present
@@ -60,11 +61,11 @@
     - vim-enhanced
     when: "'masters' in group_names"    
 
-  - name: Remove NetworkManager
-    yum: name=NetworkManager state=absent
+  #- name: Remove NetworkManager
+  #  yum: name=NetworkManager state=absent
 
   - name: Remove swaps from fstab
-    lineinfile: dest=/etc/fstab regexp='^/[\S]+\s+swap\s+swap' state=absent notify='disable swap'
+    lineinfile: dest=/etc/fstab regexp='^/[\S]+\s+swap\s+swap' state=absent
     when: "'nodes' in group_names"
 
   - name: Ensure hostname set
@@ -116,6 +117,22 @@
   - name: Install docker
     shell: env hi docker install all new storage={{ docker_storage_device }} ver={{ docker_version }}
     when: install_docker is defined
+
+  - name: Configure origin gpg keys if needed
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+    with_items:
+    - src: repo/openshift-ansible-CentOS-SIG-PaaS
+      dest: /etc/pki/rpm-gpg/
+    - src: repo/openshift-ansible-centos-paas-sig.repo
+      dest: /etc/yum.repos.d/
+    notify: refresh cache
+    when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution != "Fedora"
+    - openshift_deployment_type == 'origin'
+    - openshift_enable_origin_repo == false | bool
 
   handlers:
   - name: disable swap
