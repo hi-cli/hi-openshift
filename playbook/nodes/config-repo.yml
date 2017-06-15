@@ -2,30 +2,18 @@
   become: no
   gather_facts: no
   tasks:
-  - name: Backup repo
-    shell: mv /etc/yum.repos.d/CentOS-Base.repo "/etc/yum.repos.d/CentOS-Base.repo.backup.$(date +%Y-%m-%d:%H:%M:%S)"
-    ignore_errors: command_result is defined and "'No such file or directory' in command_result.stderr"
-
-  - set_fact: centos_repo_url={{ centos_repo_mirror }}{{ centos_repo }}.repo
-    when: centos_repo_url is undefined
-
-  - stat:
-      path: /etc/yum.repos.d/CentOS-Base.repo
-    register: p
-
-  - name: switch repo
-    shell: wget -O /etc/yum.repos.d/CentOS-Base.repo {{ centos_repo_url }} chdir=/etc/yum.repos.d
-    when: p.stat.exists is defined and p.stat.exists == false
+  - name: Download repo
+    get_url:
+      url: "{{ centos_repo_mirror }}{{ item.src }}"
+      dest: "{{ item.dest }}"
+      mode: 0644
     with_items:
-
-  - name: Configure origin gpg keys if needed
-    shell: wget -O /etc/pki/rpm-gpg/{{ item.src }} {{ centos_repo_mirror }}/{{ item.src }} chdir={{ item.dest }}
-    with_items:
+    - src: offline.repo
+      dest: /etc/yum.repos.d/CentOS-Base.repo
     - src: openshift-ansible-CentOS-SIG-PaaS
       dest: /etc/pki/rpm-gpg/
     - src: openshift-ansible-centos-paas-sig.repo
-      dest: /etc/yum.repos.d/
-    notify: refresh cache
+      dest: /etc/yum.repos.d/    
 
   - name: Clean repo
     command: yum clean all
