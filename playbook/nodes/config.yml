@@ -76,10 +76,10 @@
   #   shell: pip install --upgrade pip  
 
   - name: 
-    shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"    
+    shell: sh -c "$(curl -fsSL http://172.16.5.22:8022/johndeng/oh-my-zsh/raw/master/tools/install.sh)"    
 
   - name: install hi-cli
-    shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/hi-cli/hi-cli/master/bin/install)"
+    shell: sh -c "$(curl -fsSL http://172.16.5.22:8022/hi-cli/hi-cli/raw/master/bin/install)"
     ignore_errors: command_result is defined and "'hi-cli is already installed' in command_result.stderr"
     
   - name: turn swap off
