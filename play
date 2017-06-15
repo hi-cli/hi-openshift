@@ -99,7 +99,6 @@ function play() {
     ansible_verbose_mode="-vvv"
   fi
 
-  cd /Users/johnd/hi-cli/modules/openshift
   find playbook/nodes -name "*.yml" | while read line; do 
 
     pb=$(echo $line | awk -F"/" '{print $NF}' | awk -F'.' '{print $1}' | awk -F'-' '{print $NF}')
