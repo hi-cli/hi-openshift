@@ -53,7 +53,7 @@ function play() {
     extra_vars="${extra_vars} admin_password=${password}"
   fi
   if [ "${install_docker}" != "" ]; then
-    extra_vars="${extra_vars} force_install_docker=${install_docker}"
+    extra_vars="${extra_vars} install_docker=${install_docker}"
   fi
   if [ "${master_ip}" != "" ]; then
     extra_vars="${extra_vars} master_ip=${master_ip}"
