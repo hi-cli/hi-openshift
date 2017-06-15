@@ -119,17 +119,6 @@
   - name: Install docker
     shell: env hi docker install all new storage={{ docker_storage_device }} ver={{ docker_version }}
     when: install_docker is defined
-
-  - name: Configure origin gpg keys if needed
-    copy:
-      src: "{{ item.src }}"
-      dest: "{{ item.dest }}"
-    with_items:
-    - src: repo/openshift-ansible-CentOS-SIG-PaaS
-      dest: /etc/pki/rpm-gpg/
-    - src: repo/openshift-ansible-centos-paas-sig.repo
-      dest: /etc/yum.repos.d/
-    notify: refresh cache
     
   handlers:
   - name: disable swap
