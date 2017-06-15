@@ -130,12 +130,7 @@
     - src: repo/openshift-ansible-centos-paas-sig.repo
       dest: /etc/yum.repos.d/
     notify: refresh cache
-    when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution != "Fedora"
-    - openshift_deployment_type == 'origin'
-    - openshift_enable_origin_repo == false | bool
-
+    
   handlers:
   - name: disable swap
     command: swapoff --all
