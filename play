@@ -112,7 +112,7 @@ function play() {
   done
 
   read -d '' cli << _EOF_ 
-  ansible-playbook ${hosts_conf} playbook/nodes/config.yml ${ansible_verbose_mode} --extra-vars "${extra_vars}"
+  ansible-playbook ${hosts_conf} ${playbook} ${ansible_verbose_mode} --extra-vars "${extra_vars}"
 _EOF_
   log_debug "${cli}"
   if prompt_yesorno "Do you wish to play $1 to $2? [yes/no]"; then
