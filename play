@@ -99,8 +99,20 @@ function play() {
     ansible_verbose_mode="-vvv"
   fi
 
+  cd /Users/johnd/hi-cli/modules/openshift
+  find playbook/nodes -name "*.yml" | while read line; do 
+
+    pb=$(echo $line | awk -F"/" '{print $NF}' | awk -F'.' '{print $1}' | awk -F'-' '{print $NF}')
+
+    for b in "${books}"; do
+      if [ "${b}" == "${pb}" ]; then
+        ansible-playbook ${hosts_conf} ${line} ${ansible_verbose_mode} --extra-vars "${extra_vars}"
+      fi
+    done
+  done
+
   read -d '' cli << _EOF_ 
-  ansible-playbook ${hosts_conf} ${playbook} ${ansible_verbose_mode} --extra-vars "${extra_vars}"
+  ansible-playbook ${hosts_conf} playbook/nodes/config.yml ${ansible_verbose_mode} --extra-vars "${extra_vars}"
 _EOF_
   log_debug "${cli}"
   if prompt_yesorno "Do you wish to play $1 to $2? [yes/no]"; then

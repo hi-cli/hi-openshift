@@ -7,11 +7,6 @@
 # ansible-playbook main.yml --extra-vars "admin_password='you-admin-password' force_install_docker=true ansible_profile=dev"
 #
 ---
-
-- name: Prepare infrastracture
-  include: playbook/nodes/config.yml
-  when: prepare_infra is defined
-
 - name: Install Openshift Origin  
   include: openshift-ansible/playbooks/byo/config.yml
 
