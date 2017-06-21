@@ -56,6 +56,12 @@ function run() {
   then
     gk_deploy_load="--load"
   fi
+
+  gk_deploy_abort=""
+  if [ "${abort}" != "" ];
+  then
+    gk_deploy_abort="--abort"
+  fi
   
   if [ ! -d "${module_dir}/gluster-kubernetes" ]; then
     git clone ${gluster_kubernetes_url} ${module_dir}/gluster-kubernetes  
@@ -64,7 +70,7 @@ function run() {
   cp "${topology_json_file}" ${module_dir}/gluster-kubernetes/deploy/
 
   pushd "${module_dir}/gluster-kubernetes/deploy/" > /dev/null
-    cli="./gk-deploy --admin-key=${heketi_user} --user-key=${heketi_password} -g ${gk_deploy_verbose_mode} ${gk_deploy_load}"
+    cli="./gk-deploy --admin-key=${admin_key} --user-key=${user_key} -g ${gk_deploy_verbose_mode} ${gk_deploy_load} ${gk_deploy_abort}" 
     log_debug "${cli}"
 
     ${cli}
