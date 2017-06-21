@@ -62,19 +62,8 @@ function play() {
     extra_vars="${extra_vars} install_storage=True"
   fi
 
-  topology_json_file="${PWD}/topology.json"
-  if [ ! -f "${topology_json_file}" ]; then
-    log_warn "${topology_json_file} not found!"
-    exit
-  fi
-
   pushd "${module_dir}" > /dev/null
   
-  if [ ! -d "${module_dir}/gluster-kubernetes" ]; then
-    git clone ${gluster_kubernetes_url}
-    cp "${topology_json_file}" ${PWD}/gluster-kubernetes/deploy/  
-  fi
-
   if [ ! -d "${module_dir}/openshift-ansible" ]; then
     git clone ${openshift_ansible_url}
   fi
