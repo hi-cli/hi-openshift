@@ -51,10 +51,10 @@ function run() {
     gk_deploy_verbose_mode="-v"
   fi
 
-  gk_deploy_reload=""
+  gk_deploy_load=""
   if [ "${reload}" != "" ];
   then
-    gk_deploy_reload="--reload"
+    gk_deploy_load="--load"
   fi
   
   if [ ! -d "${module_dir}/gluster-kubernetes" ]; then
@@ -64,7 +64,7 @@ function run() {
   cp "${topology_json_file}" ${module_dir}/gluster-kubernetes/deploy/
 
   pushd "${module_dir}/gluster-kubernetes/deploy/" > /dev/null
-    ./gk-deploy --admin-key="${heketi_user}" --user-key="${heketi_password}" -g ${gk_deploy_verbose_mode} ${gk_deploy_reload}
+    ./gk-deploy --admin-key="${heketi_user}" --user-key="${heketi_password}" -g ${gk_deploy_verbose_mode} ${gk_deploy_load}
     result="$?"
   popd
 
