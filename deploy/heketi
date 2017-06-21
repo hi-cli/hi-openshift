@@ -52,7 +52,7 @@ function run() {
   fi
 
   gk_deploy_load=""
-  if [ "${reload}" != "" ];
+  if [ "${load}" != "" ];
   then
     gk_deploy_load="--load"
   fi
@@ -66,7 +66,7 @@ function run() {
   pushd "${module_dir}/gluster-kubernetes/deploy/" > /dev/null
     cli="./gk-deploy --admin-key=${heketi_user} --user-key=${heketi_password} -g ${gk_deploy_verbose_mode} ${gk_deploy_load}"
     log_debug "${cli}"
-    
+
     ${cli}
     result="$?"
   popd
