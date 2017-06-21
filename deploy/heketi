@@ -64,7 +64,10 @@ function run() {
   cp "${topology_json_file}" ${module_dir}/gluster-kubernetes/deploy/
 
   pushd "${module_dir}/gluster-kubernetes/deploy/" > /dev/null
-    ./gk-deploy --admin-key="${heketi_user}" --user-key="${heketi_password}" -g ${gk_deploy_verbose_mode} ${gk_deploy_load}
+    cli="./gk-deploy --admin-key=${heketi_user} --user-key=${heketi_password} -g ${gk_deploy_verbose_mode} ${gk_deploy_load}"
+    log_debug "${cli}"
+    
+    ${cli}
     result="$?"
   popd
 
