@@ -39,6 +39,12 @@ function run() {
     exit
   fi
 
+  which heketi-cli &2>/dev/null
+  if [ $? != 0 ]; then
+    log_warn "heketi-cli is not found, please download it from https://github.com/heketi/heketi/releases and put to /usr/bin/"
+    exit
+  fi
+
   gk_deploy_verbose_mode=""
   if [ "${verbose}" != "" ];
   then
