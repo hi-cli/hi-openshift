@@ -32,7 +32,17 @@ source "${HI_CLI_HOME}/bin/logging"
 function run() {
 
   cli="hi openshift deploy heketi"
+
+  oc whoami 2>/dev/null
+  if [ $? != 0 ]; then
+    oc login
+  fi
   
+  if ! prompt_yesorno "All persistences will be erased, do you wish to deploy heketi $(oc status | grep server)? [yes/no]"; then
+    log_warn "Canceled"
+    exit
+  fi
+
   topology_json_file="${PWD}/topology.json"
   if [ ! -f "${topology_json_file}" ]; then
     log_warn "${topology_json_file} not found!"
@@ -60,7 +70,9 @@ function run() {
   gk_deploy_abort=""
   if [ "${abort}" != "" ];
   then
-    gk_deploy_abort="--abort"
+    if prompt_yesorno "Do you wish to abort heketi $(oc status | grep server)? [yes/no]"; then
+      gk_deploy_abort="--abort"
+    fi
   fi
   
   if [ ! -d "${module_dir}/gluster-kubernetes" ]; then
