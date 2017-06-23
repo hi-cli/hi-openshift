@@ -252,12 +252,12 @@ parameters:
   displayName: Sonarqube database PVC name
   name: SONARQUBE_POSTGRESQL_PVC_NAME
   required: true
-  value: sonarqube-postgresql-data
+  value: sonarqube-postgresql-claim
 - description: Sonarqube extensions PVC name
   displayName: Sonarqube extensions PVC name
   name: SONARQUBE_EXTENSIONS_PVC_NAME
   required: true
-  value: sonarqube-data
+  value: sonarqube-extensions-claim
 - description: Username for PostgreSQL user that will be used for accessing the database.
   displayName: PostgreSQL Connection Username
   from: user[A-Z0-9]{3}

@@ -141,7 +141,7 @@ parameters:
 - description: Volume name for Sonatype Nexus e.g. nexus-data
   name: VOLUME_PVC_NAME
   required: true
-  value: nexus-data
+  value: nexus-claim
 - description: Image Stream Tag e.g. nexus
   name: IMAGE_STREAM_TAG
   required: true

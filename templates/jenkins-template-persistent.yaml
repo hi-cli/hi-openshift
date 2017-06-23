@@ -187,7 +187,7 @@ parameters:
   displayName: Name of PersistentVolumeClaim
   name: PVC_NAME
   required: true
-  value: jenkins-data
+  value: jenkins-claim
 - description: The OpenShift Namespace where the Jenkins ImageStream resides.
   displayName: Jenkins ImageStream Namespace
   name: NAMESPACE
