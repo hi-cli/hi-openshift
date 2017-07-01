@@ -34,16 +34,20 @@ source "${module_dir}/play"
 
 function run() {
 
-  cli="hi openshift install"
-  
-  if [ "${hosts}" != "" ]; then
-    if [ "${book}" == "" ]; then
-      book=config
-    fi
-    play "${module_dir}/playbook/${hosts}/${book}.yml" "config ${hosts}"
-  else
-    play "${module_dir}/main.yml" "install openshift origin"
+  cli="hi openshift update"
+
+  if [ -f ${PWD}/hosts.conf ]; then
+    hosts_conf="-i ${PWD}/hosts.conf"
   fi
+  if [ -f ${HOME}/.openshift/hosts.conf ]; then
+    hosts_conf="-i ${HOME}/.openshift/hosts.conf"
+  fi
+
+  if [ "${openshift_update_version}" == "" ]; then
+    openshift_update_version="v3_5"
+  fi
+
+  ansible-playbook ${hosts_conf} ${module_dir}/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/${openshift_update_version}/upgrade.yml
 
   result="$?"
 
