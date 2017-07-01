@@ -47,7 +47,17 @@ function run() {
     openshift_update_version="v3_5"
   fi
 
-  ansible-playbook ${hosts_conf} ${module_dir}/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/${openshift_update_version}/upgrade.yml
+  ansible_verbose_mode=
+  if [ "${verbose}" != "" ];
+  then
+    ansible_verbose_mode="-v"
+  fi
+  if [ "${more}" != "" ];
+  then
+    ansible_verbose_mode="-vvv"
+  fi
+
+  ansible-playbook ${hosts_conf} ${module_dir}/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/${openshift_update_version}/upgrade.yml ${ansible_verbose_mode}
 
   result="$?"
 
