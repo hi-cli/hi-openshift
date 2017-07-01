@@ -56,9 +56,13 @@ function run() {
   then
     ansible_verbose_mode="-vvv"
   fi
+  
+  ansible all ${hosts_conf} -m ping
 
-  ansible-playbook ${hosts_conf} ${module_dir}/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/${openshift_update_version}/upgrade.yml ${ansible_verbose_mode}
-
+  if prompt_yesorno "Do you wish to update openshift? [yes/no]"; then
+    ansible-playbook ${hosts_conf} ${module_dir}/openshift-ansible/playbooks/byo/openshift-cluster/upgrades/${openshift_update_version}/upgrade.yml ${ansible_verbose_mode}
+  fi
+  
   result="$?"
 
   eval $1="\${result}"
