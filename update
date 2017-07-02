@@ -56,7 +56,15 @@ function run() {
   then
     ansible_verbose_mode="-vvv"
   fi
-  
+
+  pushd ${module_dir}/openshift-ansible > /dev/null
+    if [ "${openshift_ansible_version}" == "" ]; then
+      openshift_ansible_version="master"
+    fi
+    git reset --hard > /dev/null
+    git checkout ${openshift_ansible_version} > /dev/null
+  popd > /dev/null
+
   ansible all ${hosts_conf} -m ping
 
   if prompt_yesorno "Do you wish to update openshift? [yes/no]"; then
